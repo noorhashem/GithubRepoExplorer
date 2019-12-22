@@ -30,7 +30,6 @@ class Dataservice {
         
         var request = URLRequest(url: URL(string: apiUrl)!)
         request.httpMethod = "GET"
-//        request.addValue("Bearer d344982e99f12b6672d49720b8e9adafe49f2aca", forHTTPHeaderField: "Authorization")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
        
         dataTask = defaultSession.dataTask(with: URL(string: apiUrl)!){ [weak self] data, response, error in
