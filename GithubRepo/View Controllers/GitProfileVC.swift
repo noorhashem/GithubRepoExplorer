@@ -10,9 +10,7 @@ import UIKit
 import SafariServices
 
 class GitProfileVC: UIViewController,UITableViewDataSource,UITableViewDelegate {
- 
-//    ,DataServiceDelegate
-
+//UITableViewDataSourcePrefetching
     //Outlets
     @IBOutlet weak var profileImage: UIImageView!
     
@@ -28,9 +26,10 @@ class GitProfileVC: UIViewController,UITableViewDataSource,UITableViewDelegate {
     //Functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        gettingUserData()
+        //repoList.prefetchDataSource = self
         repoList.dataSource = self
         repoList.delegate = self
+        gettingUserData()
         Dataservice.instance.delegate = self as? DataServiceDelegate
        
     }
@@ -48,7 +47,7 @@ class GitProfileVC: UIViewController,UITableViewDataSource,UITableViewDelegate {
     }
     
     func gettingUserRepos(){
-        Dataservice.instance.getUserRepos(apiUrl: reposURL, page: 1){
+        Dataservice.instance.userRepos {
             DispatchQueue.main.async {
                 self.repoList.reloadData()
             }
@@ -78,18 +77,30 @@ class GitProfileVC: UIViewController,UITableViewDataSource,UITableViewDelegate {
         present(svc, animated: true, completion: nil)
     }
     
+
+    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        if indexPaths.contains(where: isLoadingCell) {
+            Dataservice.instance.userRepos{
+                DispatchQueue.main.async {
+                    self.repoList.reloadData()
+                }
+            }
+    }
+}
     
-//    func onGetDataCompleted(with newIndexPathsToReload: [IndexPath]?) {
-//        <#code#>
-//    }
-//
-//    func onGetDataFailed(with error: String) {
-//        <#code#>
-//    }
 }
 
+private extension GitProfileVC {
+    func isLoadingCell(for indexPath: IndexPath) -> Bool {
+        return indexPath.row >= UserDataSource.instance.Repos.count
+    }
 
-
+    func visibleIndexPathsToReload(intersecting indexPaths: [IndexPath]) -> [IndexPath] {
+        let indexPathsForVisibleRows = repoList.indexPathsForVisibleRows ?? []
+        let indexPathsIntersection = Set(indexPathsForVisibleRows).intersection(indexPaths)
+        return Array(indexPathsIntersection)
+    }
+}
 
 
 

@@ -65,7 +65,6 @@ class Dataservice {
         
         var request = URLRequest(url: URL(string: apiUrl)!)
         request.httpMethod = "GET"
-      //request.addValue("Bearer d344982e99f12b6672d49720b8e9adafe49f2aca", forHTTPHeaderField: "Authorization")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("desc", forHTTPHeaderField: "direction")
         let parameters = ["?page" : "\(page)"]
@@ -75,7 +74,7 @@ class Dataservice {
             defer {
                 self?.dataTask = nil
             }
-            
+    
             if let error = error {
                 self!.errorMessage += "DataTask error: " + error.localizedDescription + "\n"
             } else if let data = data , let response = response as? HTTPURLResponse, response.statusCode == 200 {
@@ -88,11 +87,11 @@ class Dataservice {
                         let name = reposDict[i]["name"]!
                         let desc = reposDict[i]["description"] as? String ?? ""
                         let forks = reposDict[i]["forks"]!
-                        let lang = reposDict[i]["language"]!
+                        let lang = reposDict[i]["language"] as? String ?? ""
                         let date = reposDict[i]["created_at"]!
                         let url = reposDict[i]["html_url"]!
                         
-                        let userRepo = Repo(title: name as! String, description: desc , forks: forks as! Int, writtenIn: lang as! String, created: date as! String, repoUrl: url as! String)
+                        let userRepo = Repo(title: name as! String, description: desc , forks: forks as! Int, writtenIn: lang as! String , created: date as! String, repoUrl: url as! String)
                         UserDataSource.instance.Repos.append(userRepo)
                     }
                     completion(response)
@@ -109,31 +108,42 @@ class Dataservice {
         
     }
     
-    func getMoreRepoData() {
+    func userRepos(completion: @escaping ()->()) {
         guard !GetRepoDataInProgress else {
             return
         }
         GetRepoDataInProgress = true
-        self.getUserRepos(apiUrl: request.path, page: currentPage){ result in switch result.statusCode {
-            
-        case 200 :
-            break
-            
-        default:
-            print("not yet")
+        self.getUserRepos(apiUrl: request.path, page: currentPage){ result in
+            switch result.statusCode {
+                
+            case 200 :
+                DispatchQueue.main.async {
+                    self.currentPage += 1
+                    self.GetRepoDataInProgress = false
+                    
+                    if self.currentPage > 1 {
+                        let indexPathsToReload = self.calculateIndexPathsToReload(from: UserDataSource.instance.Repos)
+                        self.delegate?.onGetDataCompleted(with: indexPathsToReload)
+                    } else {
+                        self.delegate?.onGetDataCompleted(with: .none)
+                    }
+                    
+                    completion()
+                }
+                
+            default:
+                print("error with requesting from API")
             }
             
         }
         
     }
-
     
     
     
-    
-    
-    
-    
-    
-    
+    private func calculateIndexPathsToReload(from newRepos: [Repo]) -> [IndexPath] {
+        let startIndex = UserDataSource.instance.Repos.count - newRepos.count
+        let endIndex = startIndex + newRepos.count
+        return (startIndex..<endIndex).map { IndexPath(row: $0, section: 0) }
+    }
 }
