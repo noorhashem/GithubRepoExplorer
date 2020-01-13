@@ -16,8 +16,8 @@ struct Repo {
     var language : String
     var dateCreated : String
     var repoUrl : String
-//    let dateFormatter = ISO8601DateFormatter()
     
+
     
     init(title : String, description : String, forks: Int, writtenIn lang: String, created: String, repoUrl : String) {
         self.repoTitle = title
@@ -28,9 +28,7 @@ struct Repo {
         self.repoUrl = repoUrl
     }
     
-    
-    
-    
+
     func formatDateTime (passedDate : String) -> String {
         var finalDate : String = ""
         var finalTime : String = ""

@@ -10,6 +10,8 @@ import UIKit
 import SafariServices
 
 class GitProfileVC: UIViewController,UITableViewDataSource,UITableViewDelegate {
+ 
+//    ,DataServiceDelegate
 
     //Outlets
     @IBOutlet weak var profileImage: UIImageView!
@@ -22,14 +24,14 @@ class GitProfileVC: UIViewController,UITableViewDataSource,UITableViewDelegate {
     
     //Variables and Constants
     let apiResults : [String : Any] = [:]
-    //MARK:let userRepo : [Repo] = [] //why lazem intializers?? //fe tare2a tanya abasy beeha el repos?
-    
+    //MARK:let userRepo : [Repo] = [] //why lazem intializers?? //fe tare2a tanya abasy beeha el repos
     //Functions
     override func viewDidLoad() {
         super.viewDidLoad()
         gettingUserData()
         repoList.dataSource = self
         repoList.delegate = self
+        Dataservice.instance.delegate = self as? DataServiceDelegate
        
     }
     
@@ -46,17 +48,12 @@ class GitProfileVC: UIViewController,UITableViewDataSource,UITableViewDelegate {
     }
     
     func gettingUserRepos(){
-        Dataservice.instance.getUserRepos(apiUrl: reposURL){
+        Dataservice.instance.getUserRepos(apiUrl: reposURL, page: 1){
             DispatchQueue.main.async {
                 self.repoList.reloadData()
-                
             }
-         
-            
         }
     }
-    
-    
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
@@ -71,7 +68,7 @@ class GitProfileVC: UIViewController,UITableViewDataSource,UITableViewDelegate {
         cell.repoLanguage.text = "Language : " + UserDataSource.instance.Repos[indexPath.item].language
         cell.forkCount.text = "Forks : \(UserDataSource.instance.Repos[indexPath.item].forksCount)"
         cell.repoDate.text = "\(UserDataSource.instance.Repos[indexPath.item].formatDateTime(passedDate: UserDataSource.instance.Repos[indexPath.item].dateCreated))"
-        cell.userAvatar.load(url: URL(string: UserDataSource.instance.userImageUrl as! String)!)
+        cell.userAvatar.load(url: URL(string: UserDataSource.instance.userImageUrl)!)
         
         return cell
     }
@@ -80,7 +77,20 @@ class GitProfileVC: UIViewController,UITableViewDataSource,UITableViewDelegate {
         let svc = SFSafariViewController(url: URL(string: UserDataSource.instance.Repos[indexPath.item].repoUrl)!)
         present(svc, animated: true, completion: nil)
     }
+    
+    
+//    func onGetDataCompleted(with newIndexPathsToReload: [IndexPath]?) {
+//        <#code#>
+//    }
+//
+//    func onGetDataFailed(with error: String) {
+//        <#code#>
+//    }
 }
+
+
+
+
 
 
 extension UIImageView {

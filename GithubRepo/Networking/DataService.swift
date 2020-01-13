@@ -9,15 +9,18 @@
 import Foundation
 import SwiftyJSON
 
-
 class Dataservice {
+    
     //Variables and Constants
     static let  instance = Dataservice()
-    let defaultSession = URLSession(configuration: .default)
-    var dataTask: URLSessionDataTask?
+    private let defaultSession = URLSession(configuration: .default)
+    private var dataTask: URLSessionDataTask?
     var errorMessage = ""
-    
-
+    let request = ApiRequest()
+    private var currentPage = 1
+    private var total = 0
+    private var GetRepoDataInProgress = false
+    var delegate: DataServiceDelegate?
     
    
     //Type Alias
@@ -51,15 +54,13 @@ class Dataservice {
                     }
 
             }
-            
-    
         }
         dataTask?.resume()
 
     }
     
     
-    func getUserRepos(apiUrl:String, completion: @escaping () -> ()) {
+    func getUserRepos(apiUrl:String,page: Int, completion: @escaping (HTTPURLResponse) -> ()) {
         dataTask?.cancel()
         
         var request = URLRequest(url: URL(string: apiUrl)!)
@@ -67,8 +68,10 @@ class Dataservice {
       //request.addValue("Bearer d344982e99f12b6672d49720b8e9adafe49f2aca", forHTTPHeaderField: "Authorization")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("desc", forHTTPHeaderField: "direction")
+        let parameters = ["?page" : "\(page)"]
+        let encodedURLRequest = request.query(with: parameters)
         
-        dataTask = defaultSession.dataTask(with: URL(string: apiUrl)!){ [weak self] data, response, error in
+        dataTask = defaultSession.dataTask(with: encodedURLRequest){ [weak self] data, response, error in
             defer {
                 self?.dataTask = nil
             }
@@ -80,7 +83,6 @@ class Dataservice {
                 do {
                     let json = try! JSONSerialization.jsonObject(with: data, options: [])
                     var reposDict = json as! [JSONDictionary]
-                    //var reposArray = [Repo]()
                     
                     for i in 0...(reposDict.count - 1) {
                         let name = reposDict[i]["name"]!
@@ -93,7 +95,7 @@ class Dataservice {
                         let userRepo = Repo(title: name as! String, description: desc , forks: forks as! Int, writtenIn: lang as! String, created: date as! String, repoUrl: url as! String)
                         UserDataSource.instance.Repos.append(userRepo)
                     }
-                    completion()
+                    completion(response)
 
                 } catch {
                     print("JSON error: \(error.localizedDescription)")
@@ -107,7 +109,23 @@ class Dataservice {
         
     }
     
-
+    func getMoreRepoData() {
+        guard !GetRepoDataInProgress else {
+            return
+        }
+        GetRepoDataInProgress = true
+        self.getUserRepos(apiUrl: request.path, page: currentPage){ result in switch result.statusCode {
+            
+        case 200 :
+            break
+            
+        default:
+            print("not yet")
+            }
+            
+        }
+        
+    }
 
     
     

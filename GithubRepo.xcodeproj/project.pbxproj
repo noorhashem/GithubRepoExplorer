@@ -17,6 +17,9 @@
 		0402D1D623A82D4100D8ED2F /* UserDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0402D1D523A82D4100D8ED2F /* UserDataSource.swift */; };
 		0402D1D823A8322400D8ED2F /* Repo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0402D1D723A8322400D8ED2F /* Repo.swift */; };
 		0402D1DA23A8564800D8ED2F /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0402D1D923A8564800D8ED2F /* Constants.swift */; };
+		04964C7423B053DA001FC621 /* API_Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04964C7323B053DA001FC621 /* API_Request.swift */; };
+		04964C7623B0544B001FC621 /* URLRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04964C7523B0544B001FC621 /* URLRequest.swift */; };
+		04964C7823B07430001FC621 /* DataServiceDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04964C7723B07430001FC621 /* DataServiceDelegate.swift */; };
 		76D511AF4A831FFD64D9E4C8 /* Pods_GithubRepo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 545F7B72494CE81BE0DE53A6 /* Pods_GithubRepo.framework */; };
 /* End PBXBuildFile section */
 
@@ -33,6 +36,9 @@
 		0402D1D523A82D4100D8ED2F /* UserDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataSource.swift; sourceTree = "<group>"; };
 		0402D1D723A8322400D8ED2F /* Repo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repo.swift; sourceTree = "<group>"; };
 		0402D1D923A8564800D8ED2F /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		04964C7323B053DA001FC621 /* API_Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = API_Request.swift; sourceTree = "<group>"; };
+		04964C7523B0544B001FC621 /* URLRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLRequest.swift; sourceTree = "<group>"; };
+		04964C7723B07430001FC621 /* DataServiceDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataServiceDelegate.swift; sourceTree = "<group>"; };
 		182D2439BEF17A8CD1908ADB /* Pods-GithubRepo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GithubRepo.debug.xcconfig"; path = "Target Support Files/Pods-GithubRepo/Pods-GithubRepo.debug.xcconfig"; sourceTree = "<group>"; };
 		25C6C742CE82F812D0716522 /* Pods-GithubRepo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GithubRepo.release.xcconfig"; path = "Target Support Files/Pods-GithubRepo/Pods-GithubRepo.release.xcconfig"; sourceTree = "<group>"; };
 		545F7B72494CE81BE0DE53A6 /* Pods_GithubRepo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GithubRepo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -114,6 +120,9 @@
 			isa = PBXGroup;
 			children = (
 				0402D1D223A80E8000D8ED2F /* DataService.swift */,
+				04964C7723B07430001FC621 /* DataServiceDelegate.swift */,
+				04964C7323B053DA001FC621 /* API_Request.swift */,
+				04964C7523B0544B001FC621 /* URLRequest.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -258,12 +267,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				04964C7823B07430001FC621 /* DataServiceDelegate.swift in Sources */,
 				0402D1BA23A7F9F000D8ED2F /* GitProfileVC.swift in Sources */,
 				0402D1B823A7F9F000D8ED2F /* AppDelegate.swift in Sources */,
 				0402D1D023A80E3300D8ED2F /* RepoCell.swift in Sources */,
 				0402D1D823A8322400D8ED2F /* Repo.swift in Sources */,
 				0402D1DA23A8564800D8ED2F /* Constants.swift in Sources */,
 				0402D1D623A82D4100D8ED2F /* UserDataSource.swift in Sources */,
+				04964C7623B0544B001FC621 /* URLRequest.swift in Sources */,
+				04964C7423B053DA001FC621 /* API_Request.swift in Sources */,
 				0402D1D323A80E8000D8ED2F /* DataService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
