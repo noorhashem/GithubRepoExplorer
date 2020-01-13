@@ -9,8 +9,7 @@
 import UIKit
 import SafariServices
 
-class GitProfileVC: UIViewController,UITableViewDataSource,UITableViewDelegate {
-//UITableViewDataSourcePrefetching
+class GitProfileVC: UIViewController,UITableViewDataSource,UITableViewDelegate, UITableViewDataSourcePrefetching{
     //Outlets
     @IBOutlet weak var profileImage: UIImageView!
     
@@ -26,7 +25,7 @@ class GitProfileVC: UIViewController,UITableViewDataSource,UITableViewDelegate {
     //Functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        //repoList.prefetchDataSource = self
+        repoList.prefetchDataSource = self
         repoList.dataSource = self
         repoList.delegate = self
         gettingUserData()
@@ -56,7 +55,7 @@ class GitProfileVC: UIViewController,UITableViewDataSource,UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        return UserDataSource.instance.Repos.count
+        return UserDataSource.instance.userReposNum
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
