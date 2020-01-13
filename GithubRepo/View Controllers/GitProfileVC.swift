@@ -10,6 +10,7 @@ import UIKit
 import SafariServices
 
 class GitProfileVC: UIViewController,UITableViewDataSource,UITableViewDelegate, UITableViewDataSourcePrefetching{
+    
     //Outlets
     @IBOutlet weak var profileImage: UIImageView!
     
@@ -21,8 +22,7 @@ class GitProfileVC: UIViewController,UITableViewDataSource,UITableViewDelegate, 
     
     //Variables and Constants
     let apiResults : [String : Any] = [:]
-    //MARK:let userRepo : [Repo] = [] //why lazem intializers?? //fe tare2a tanya abasy beeha el repos
-    //Functions
+
     override func viewDidLoad() {
         super.viewDidLoad()
         repoList.prefetchDataSource = self

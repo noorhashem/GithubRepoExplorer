@@ -22,7 +22,7 @@ class Dataservice {
     private var GetRepoDataInProgress = false
     var delegate: DataServiceDelegate?
     
-   
+    
     //Type Alias
     typealias JSONDictionary = [String:Any]
     typealias repoResponse = Array<Dictionary<String, Any>>
@@ -34,29 +34,29 @@ class Dataservice {
         var request = URLRequest(url: URL(string: apiUrl)!)
         request.httpMethod = "GET"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-       
+        
         dataTask = defaultSession.dataTask(with: URL(string: apiUrl)!){ [weak self] data, response, error in
             defer {
                 self?.dataTask = nil
             }
-
+            
             if let error = error {
                 self?.errorMessage += "DataTask error: " + error.localizedDescription + "\n"
             } else if let data = data , let response = response as? HTTPURLResponse, response.statusCode == 200 {
-                    print("insideGetUserData")
-                    do {
-                        let json = try! JSONSerialization.jsonObject(with: data, options: [])
-                        let userDataDict = json as! JSONDictionary
-                        UserDataSource.instance.setUserData(usrName: userDataDict["name"] as! String, url: userDataDict["avatar_url"] as! String, repos_count: userDataDict["public_repos"] as! Int, repos: [])
-                        completion(userDataDict)
-                    } catch {
-                        print("JSON error: \(error.localizedDescription)")
-                    }
-
+                print("insideGetUserData")
+                do {
+                    let json = try! JSONSerialization.jsonObject(with: data, options: [])
+                    let userDataDict = json as! JSONDictionary
+                    UserDataSource.instance.setUserData(usrName: userDataDict["name"] as! String, url: userDataDict["avatar_url"] as! String, repos_count: userDataDict["public_repos"] as! Int, repos: [])
+                    completion(userDataDict)
+                } catch {
+                    print("JSON error: \(error.localizedDescription)")
+                }
+                
             }
         }
         dataTask?.resume()
-
+        
     }
     
     
@@ -74,7 +74,7 @@ class Dataservice {
             defer {
                 self?.dataTask = nil
             }
-    
+            
             if let error = error {
                 self!.errorMessage += "DataTask error: " + error.localizedDescription + "\n"
             } else if let data = data , let response = response as? HTTPURLResponse, response.statusCode == 200 {
@@ -95,7 +95,7 @@ class Dataservice {
                         UserDataSource.instance.Repos.append(userRepo)
                     }
                     completion(response)
-
+                    
                 } catch {
                     print("JSON error: \(error.localizedDescription)")
                 }
