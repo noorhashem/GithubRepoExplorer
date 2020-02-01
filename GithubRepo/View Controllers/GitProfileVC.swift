@@ -28,12 +28,12 @@ class GitProfileVC: UIViewController,UITableViewDataSource,UITableViewDelegate, 
         repoList.prefetchDataSource = self
         repoList.dataSource = self
         repoList.delegate = self
-        gettingUserData()
+        gettingUserInfo()
         Dataservice.instance.delegate = self as? DataServiceDelegate
        
     }
     
-    func gettingUserData() {
+    func gettingUserInfo() {
         Dataservice.instance.getUserData(apiUrl: baseURL + user) { apiResults in
             DispatchQueue.main.async {
                 self.profileImage.load(url: URL(string: apiResults["avatar_url"] as! String)!)
@@ -41,7 +41,6 @@ class GitProfileVC: UIViewController,UITableViewDataSource,UITableViewDelegate, 
                 self.numRepos.text = "\(apiResults["public_repos"] as? Int ?? 0) Repositories"
                  self.gettingUserRepos()
             }
-            
         }
     }
     
@@ -61,13 +60,7 @@ class GitProfileVC: UIViewController,UITableViewDataSource,UITableViewDelegate, 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "repoCell", for: indexPath) as! RepoCell
-        cell.repoTitle.text = UserDataSource.instance.Repos[indexPath.item].repoTitle
-        cell.repoDesc.text = UserDataSource.instance.Repos[indexPath.item].repoDescription
-        cell.repoLanguage.text = "Language : " + UserDataSource.instance.Repos[indexPath.item].language
-        cell.forkCount.text = "Forks : \(UserDataSource.instance.Repos[indexPath.item].forksCount)"
-        cell.repoDate.text = "\(UserDataSource.instance.Repos[indexPath.item].formatDateTime(passedDate: UserDataSource.instance.Repos[indexPath.item].dateCreated))"
-        cell.userAvatar.load(url: URL(string: UserDataSource.instance.userImageUrl)!)
-        
+        cell.UpdateCellData(cellNum: indexPath.item)
         return cell
     }
     

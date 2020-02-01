@@ -30,6 +30,15 @@ class RepoCell: UITableViewCell {
         setupView()
     }
     
+    func UpdateCellData(cellNum : Int) {
+        self.repoTitle.text = UserDataSource.instance.Repos[cellNum].repoTitle
+        self.repoDesc.text = UserDataSource.instance.Repos[cellNum].repoDescription
+        self.repoLanguage.text = "Language : " + UserDataSource.instance.Repos[cellNum].language
+        self.forkCount.text = "Forks : \(UserDataSource.instance.Repos[cellNum].forksCount)"
+        self.repoDate.text = "\(UserDataSource.instance.Repos[cellNum].formatDateTime(passedDate: UserDataSource.instance.Repos[cellNum].dateCreated))"
+        self.userAvatar.load(url: URL(string: UserDataSource.instance.userImageUrl)!)
+    }
+    
     
     func setupView() {
         self.cardBackgroundView.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
