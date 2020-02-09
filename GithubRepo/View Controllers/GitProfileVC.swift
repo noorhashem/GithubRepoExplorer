@@ -22,6 +22,7 @@ class GitProfileVC: UIViewController,UITableViewDataSource,UITableViewDelegate, 
     
     //Variables and Constants
     let apiResults : [String : Any] = [:]
+    var request = ApiRequest()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,11 +35,11 @@ class GitProfileVC: UIViewController,UITableViewDataSource,UITableViewDelegate, 
     }
     
     func gettingUserInfo() {
-        Dataservice.instance.getUserData(apiUrl: baseURL + user) { apiResults in
+        Dataservice.instance.getUserData(apiUrl:request.usrPath,page:request.getPage(), requestType: "user") {_ in 
             DispatchQueue.main.async {
-                self.profileImage.load(url: URL(string: apiResults["avatar_url"] as! String)!)
-                self.profileUsername.text = apiResults["name"] as? String
-                self.numRepos.text = "\(apiResults["public_repos"] as? Int ?? 0) Repositories"
+                self.profileImage.load(url: URL(string: UserDataSource.instance.userImageUrl)!)
+                self.profileUsername.text = UserDataSource.instance.getName()
+                self.numRepos.text = "\(UserDataSource.instance.getRepos()) Repositories"
                  self.gettingUserRepos()
             }
         }

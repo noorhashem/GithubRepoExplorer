@@ -37,7 +37,7 @@ class UserDataSource {
         
     }
     
-    func getRepos() -> [Repo] {
-        return Repos
+    func getRepos() -> Int {
+        return userReposNum
     }
 }

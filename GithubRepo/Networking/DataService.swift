@@ -21,19 +21,25 @@ class Dataservice {
     private var total = 0
     private var GetRepoDataInProgress = false
     var delegate: DataServiceDelegate?
-    
-    
+  
     //Type Alias
     typealias JSONDictionary = [String:Any]
     typealias repoResponse = Array<Dictionary<String, Any>>
     
-    
-    func getUserData(apiUrl:String, completion: @escaping (JSONDictionary) -> ()) {
+    //MARK: problem with matching completion handlers
+    func getUserData(apiUrl:String, page : Int, requestType:String, completion: @escaping (HTTPURLResponse) -> ()) {
         dataTask?.cancel()
         
-        var request = URLRequest(url: URL(string: apiUrl)!)
-        request.httpMethod = "GET"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        switch (requestType) {
+        case "user" :
+            var request = ApiRequest().infoRequest
+            break
+        case "repo" :
+            var request = ApiRequest().repoRequest
+            break
+        default:
+            print("error with setting up request")
+        }
         
         dataTask = defaultSession.dataTask(with: URL(string: apiUrl)!){ [weak self] data, response, error in
             defer {
@@ -46,74 +52,39 @@ class Dataservice {
                 print("insideGetUserData")
                 do {
                     let json = try! JSONSerialization.jsonObject(with: data, options: [])
-                    let userDataDict = json as! JSONDictionary
-                    UserDataSource.instance.setUserData(usrName: userDataDict["name"] as! String, url: userDataDict["avatar_url"] as! String, repos_count: userDataDict["public_repos"] as! Int, repos: [])
-                    completion(userDataDict)
-                } catch {
-                    print("JSON error: \(error.localizedDescription)")
-                }
-                
-            }
-        }
-        dataTask?.resume()
-        
-    }
-    
-    
-    func getUserRepos(apiUrl:String,page: Int, completion: @escaping (HTTPURLResponse) -> ()) {
-        dataTask?.cancel()
-        
-        var request = URLRequest(url: URL(string: apiUrl)!)
-        request.httpMethod = "GET"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("desc", forHTTPHeaderField: "direction")
-        let parameters = ["?page" : "\(page)"]
-        let encodedURLRequest = request.query(with: parameters)
-        
-        dataTask = defaultSession.dataTask(with: encodedURLRequest){ [weak self] data, response, error in
-            defer {
-                self?.dataTask = nil
-            }
-            
-            if let error = error {
-                self!.errorMessage += "DataTask error: " + error.localizedDescription + "\n"
-            } else if let data = data , let response = response as? HTTPURLResponse, response.statusCode == 200 {
-                print("insideGetRepos")
-                do {
-                    let json = try! JSONSerialization.jsonObject(with: data, options: [])
-                    var reposDict = json as! [JSONDictionary]
-                    
-                    for i in 0...(reposDict.count - 1) {
-                        let name = reposDict[i]["name"]!
-                        let desc = reposDict[i]["description"] as? String ?? ""
-                        let forks = reposDict[i]["forks"]!
-                        let lang = reposDict[i]["language"] as? String ?? ""
-                        let date = reposDict[i]["created_at"]!
-                        let url = reposDict[i]["html_url"]!
-                        
-                        let userRepo = Repo(title: name as! String, description: desc , forks: forks as! Int, writtenIn: lang as! String , created: date as! String, repoUrl: url as! String)
-                        UserDataSource.instance.Repos.append(userRepo)
+                    switch (requestType) {
+                    case "user" :
+                //MARK: DUN UNDERSTAND WHY I HAVE TO USE OPTIONAL HERE
+                        let Dict = json as! JSONDictionary
+                        self?.parseUserData(data: Dict)
+                        completion(response)
+                        break
+                    case "repo" :
+                         let Dict = json as! [JSONDictionary]
+                        self?.parseRepoData(data: Dict)
+                        completion(response)
+                        break
+                    default:
+                        print("error with setting up request")
                     }
-                    completion(response)
                     
                 } catch {
                     print("JSON error: \(error.localizedDescription)")
                 }
                 
             }
-            
-            
         }
         dataTask?.resume()
         
     }
     
+
     func userRepos(completion: @escaping ()->()) {
         guard !GetRepoDataInProgress else {
             return
         }
         GetRepoDataInProgress = true
-        self.getUserRepos(apiUrl: request.path, page: currentPage){ result in
+        self.getUserData(apiUrl: request.repoPath, page: request.getPage(), requestType: "repo") { result in
             switch result.statusCode {
                 
             case 200 :
@@ -136,14 +107,33 @@ class Dataservice {
             }
             
         }
-        
     }
-    
-    
     
     private func calculateIndexPathsToReload(from newRepos: [Repo]) -> [IndexPath] {
         let startIndex = UserDataSource.instance.Repos.count - newRepos.count
         let endIndex = startIndex + newRepos.count
         return (startIndex..<endIndex).map { IndexPath(row: $0, section: 0) }
+    }
+    
+    
+    func parseRepoData(data : [JSONDictionary]){
+        
+        for i in 0...(data.count - 1) {
+            
+            let name = data[i]["name"]!
+            let desc = data[i]["description"] as? String ?? ""
+            let forks = data[i]["forks"]!
+            let lang = data[i]["language"] as? String ?? ""
+            let date = data[i]["created_at"]!
+            let url = data[i]["html_url"]!
+            
+            let userRepo = Repo(title: name as! String, description: desc , forks: forks as! Int, writtenIn: lang as! String , created: date as! String, repoUrl: url as! String)
+            UserDataSource.instance.Repos.append(userRepo)
+        }
+      
+    }
+    
+    func parseUserData(data:JSONDictionary){
+        UserDataSource.instance.setUserData(usrName: data["name"] as! String, url: data["avatar_url"] as! String, repos_count: data["public_repos"] as! Int, repos: [])
     }
 }
